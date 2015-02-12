@@ -27,7 +27,7 @@
           - edx-devstack
     - name: Run vagrant-devstack.yml playbook from Edx
       shell: . /edx/app/edx_ansible/venvs/edx_ansible/bin/activate &&
-          ansible-playbook -i localhost, -c local vagrant-devstack.yml --tags=deploy
+          ansible-playbook -i localhost, -c local vagrant-devstack.yml
           -e configuration_version={{ openedx_release }}
           -e edx_platform_version={{ openedx_fun_release }}
           -e certs_version={{ openedx_release }}
