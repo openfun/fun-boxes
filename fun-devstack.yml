@@ -1,0 +1,126 @@
+---
+
+- name: FUN development stack
+  hosts: all
+  remote_user: vagrant
+
+  vars:
+    edxapp_home: "/edx/app/edxapp"
+    virtualenv: "{{ edxapp_home }}/venvs/edxapp"
+    edx_ansible_venv: "/edx/app/edx_ansible/venvs/edx_ansible"
+    python: "{{ virtualenv }}/bin/python"
+
+  tasks:
+    - name: Fix venv permissions
+      file:
+        path={{ edx_ansible_venv }}
+        state=directory
+        recurse=yes owner=edx-ansible group=edx-ansible
+      sudo: yes
+
+    - name: Update apt cache and upgrade apt packages
+      apt: update_cache=yes upgrade=yes cache_valid_time=3600
+      sudo: yes
+
+    - debug: msg="Running Edx ansible scripts for release {{ openedx_release }} (FUN release {{ openedx_fun_release }})"
+      tags:
+          - edx-devstack
+    - name: Run vagrant-devstack.yml playbook from Edx
+      shell: . /edx/app/edx_ansible/venvs/edx_ansible/bin/activate &&
+          ansible-playbook -i localhost, -c local vagrant-devstack.yml --tags=deploy
+          -e configuration_version={{ openedx_release }}
+          -e edx_platform_version={{ openedx_fun_release }}
+          -e certs_version={{ openedx_release }}
+          -e forum_version={{ openedx_release }}
+          -e xqueue_version={{ openedx_release }}
+        chdir="/edx/app/edx_ansible/edx_ansible/playbooks"
+      tags:
+          - edx-devstack
+
+    - name: Install setuptools
+      pip: virtualenv={{ virtualenv }} name=setuptools
+      sudo: yes
+      sudo_user: edxapp
+    - name: Install fun-apps base requirements
+      pip: virtualenv={{ virtualenv }} requirements="{{ edxapp_home }}/fun-apps/requirements/base.txt"
+      sudo: yes
+      sudo_user: edxapp
+    - name: Install fun-apps dm-xblock requirements
+      pip: virtualenv={{ virtualenv }} requirements="{{ edxapp_home }}/fun-apps/requirements/dm-xblock.txt"
+      sudo: yes
+      sudo_user: edxapp
+
+    - name: Symlink fun-config to lms environment
+      file: state=link src="{{ edxapp_home}}/fun-config/django-settings/fun/" dest="{{ edxapp_home }}/edx-platform/lms/envs/fun"
+      sudo: yes
+      sudo_user: edxapp
+    - name: Symlink fun-config to cms environment
+      file: state=link src="{{ edxapp_home}}/fun-config/django-settings/fun/" dest="{{ edxapp_home }}/edx-platform/cms/envs/fun"
+      sudo: yes
+      sudo_user: edxapp
+
+    - name: Ensure lms.env.json config uses a custom theme
+      lineinfile:
+        'dest={{ edxapp_home }}/lms.env.json
+        backrefs=yes
+        regexp="( +\"USE_CUSTOM_THEME\": )false(.*)"
+        line="\1true\2"'
+      sudo: yes
+      sudo_user: edxapp
+    - name: Ensure lms.env.json config uses the fun theme
+      lineinfile:
+        'dest={{ edxapp_home }}/lms.env.json
+        backrefs=yes
+        regexp="( +\"THEME_NAME\": )\"\"(.*)"
+        line="\1\"fun\"\2"'
+      sudo: yes
+      sudo_user: edxapp
+
+    - name: Ensure cms.env.json config uses a custom theme
+      lineinfile:
+        'dest={{ edxapp_home }}/cms.env.json
+        backrefs=yes
+        regexp="( +\"USE_CUSTOM_THEME\": )false(.*)"
+        line="\1true\2"'
+      sudo: yes
+      sudo_user: edxapp
+    - name: Ensure cms.env.json config uses the fun theme
+      lineinfile:
+        'dest={{ edxapp_home }}/cms.env.json
+        backrefs=yes
+        regexp="( +\"THEME_NAME\": )\"\"(.*)"
+        line="\1\"fun\"\2"'
+      sudo: yes
+      sudo_user: edxapp
+
+    - name: Syncdb for lms
+      shell: "{{ python }} ./manage.py lms --settings=fun.lms_dev syncdb"
+      args:
+          chdir: "{{ edxapp_home }}/edx-platform"
+      sudo: yes
+      sudo_user: edxapp
+    - name: Syncdb for cms
+      shell: "{{ python }} ./manage.py cms --settings=fun.cms_dev syncdb"
+      args:
+          chdir: "{{ edxapp_home }}/edx-platform"
+      sudo: yes
+      sudo_user: edxapp
+
+    - name: Create test report folder
+      file: state=directory path={{ edxapp_home }}/edx-platform/reports/ owner=edxapp group=edxapp
+      sudo: yes
+    - name: Create test report lms folder
+      file: state=directory path={{ edxapp_home }}/edx-platform/reports/lms owner=edxapp group=edxapp
+      sudo: yes
+    - name: Create test report cms folder
+      file: state=directory path={{ edxapp_home }}/edx-platform/reports/cms owner=edxapp group=edxapp
+      sudo: yes
+    - name: Create .testids folder
+      file: state=directory path={{ edxapp_home }}/edx-platform/.testids owner=edxapp group=edxapp
+      sudo: yes
+    - name: Create .testids lms folder
+      file: state=directory path={{ edxapp_home }}/edx-platform/.testids/lms owner=edxapp group=edxapp
+      sudo: yes
+    - name: Create .testids cms folder
+      file: state=directory path={{ edxapp_home }}/edx-platform/.testids/cms owner=edxapp group=edxapp
+      sudo: yes
