@@ -35,7 +35,7 @@
           -e xqueue_version={{ openedx_release }}
         chdir="/edx/app/edx_ansible/edx_ansible/playbooks"
       tags:
-          - edx-devstack
+          - edx
 
     - name: Install setuptools
       pip: virtualenv={{ virtualenv }} name=setuptools
@@ -47,15 +47,6 @@
       sudo_user: edxapp
     - name: Install fun-apps dm-xblock requirements
       pip: virtualenv={{ virtualenv }} requirements="{{ edxapp_home }}/fun-apps/requirements/dm-xblock.txt"
-      sudo: yes
-      sudo_user: edxapp
-
-    - name: Symlink fun-config to lms environment
-      file: state=link src="{{ edxapp_home}}/fun-config/django-settings/fun/" dest="{{ edxapp_home }}/edx-platform/lms/envs/fun"
-      sudo: yes
-      sudo_user: edxapp
-    - name: Symlink fun-config to cms environment
-      file: state=link src="{{ edxapp_home}}/fun-config/django-settings/fun/" dest="{{ edxapp_home }}/edx-platform/cms/envs/fun"
       sudo: yes
       sudo_user: edxapp
 
@@ -123,4 +114,7 @@
       sudo: yes
     - name: Create .testids cms folder
       file: state=directory path={{ edxapp_home }}/edx-platform/.testids/cms owner=edxapp group=edxapp
+      sudo: yes
+    - name: Create attestations folder
+      file: state=directory path=/edx/var/edxapp/attestations/ owner=edxapp group=edxapp
       sudo: yes

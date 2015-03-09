@@ -15,9 +15,6 @@
 
     - name: Checkout fun-apps repository
       git: repo=https://github.com/openfun/fun-apps dest={{ root_dir }}/fun-apps/ version={{ version }}
-    # TODO this does not work yet because the repository is private
-    #- name: Checkout fun-config repository
-      #git: repo=git://github.com/openfun/fun-config dest={{ root_dir }}/fun-config/ version={{ version }}
     - name: Checkout edx-theme repository
       git: repo=https://github.com/openfun/edx-theme dest={{ root_dir }}/themes/fun version={{ version }}
     - name: Checkout edx-plaftorm repository

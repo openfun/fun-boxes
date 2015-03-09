@@ -24,6 +24,7 @@ fun_release = (ENV["FUN_RELEASE"] or "2.7")
 openedx_release = fun_releases[fun_release]
 openedx_fun_release = "fun/release-" + fun_release
 
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Creates an edX devstack VM from an official release
@@ -31,8 +32,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box     = openedx_release[:box]
   config.vm.box_url = "http://files.edx.org/vagrant-images/#{openedx_release[:file]}"
 
-  config.vm.network :private_network, ip: "192.168.33.10"# TODO what for?
-  # TODO disable port forwarding if environment variable is set
   config.vm.network :forwarded_port, guest: 8000, host: 8000
   config.vm.network :forwarded_port, guest: 8001, host: 8001
   config.vm.network :forwarded_port, guest: 18080, host: 18080
@@ -42,20 +41,26 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.synced_folder  ".", "/vagrant", disabled: true
 
-  def sync_folder(src, dst, config, use_nfs)
-    if use_nfs
-      config.vm.synced_folder src, dst, create: true, owner: "edxapp", group: "www-data"
-    else
-      config.vm.synced_folder src, dst, create: true, nfs: true
+  # This is for enabling NFS
+  config.vm.network :private_network, ip: "10.11.12.13"
+
+  # If this environment variable is defined, we mount the OpenEdx and OpenFUN
+  # repositories from this folder to their corresponding locations in the VM
+  if ENV['VAGRANT_MOUNT_BASE']
+    # Sync folders with NFS or VBOXFS
+    def sync_folder(src, dst, config)
+      use_nfs = (ENV['VAGRANT_USE_VBOXFS'] == 'true') ? false : true
+      full_src = ENV['VAGRANT_MOUNT_BASE'] + "/" + src
+      if use_nfs
+        config.vm.synced_folder full_src, dst, create: true, nfs: true
+      else
+        config.vm.synced_folder full_src, dst, create: true, owner: "edxapp", group: "www-data"
+      end
     end
+    sync_folder "edx-platform", "/edx/app/edxapp/edx-platform", config
+    sync_folder "fun-apps", "/edx/app/edxapp/fun-apps", config
+    sync_folder "themes", "/edx/app/edxapp/themes", config
   end
-  use_nfs = (ENV['VAGRANT_USE_VBOXFS'] == 'true') ? false : true
-  sync_folder "repos/cs_comments_service", "/edx/app/forum/cs_comments_service", config, use_nfs
-  sync_folder "repos/edx-platform", "/edx/app/edxapp/edx-platform", config, use_nfs
-  sync_folder "repos/fun-apps", "/edx/app/edxapp/fun-apps", config, use_nfs
-  sync_folder "repos/fun-config", "/edx/app/edxapp/fun-config", config, use_nfs
-  sync_folder "repos/ora", "/edx/app/ora/ora", config, use_nfs
-  sync_folder "repos/themes", "/edx/app/edxapp/themes", config, use_nfs
 
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", MEMORY.to_s]
