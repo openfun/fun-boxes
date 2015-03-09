@@ -1,23 +1,11 @@
 Install dependencies::
 
     sudo apt-get install ansible virtualbox
-
-Define requested Openfun and OpenEdx releases::
-
-    export FUN_RELEASE=2.7
-    export OPENEDX_RELEASE=named-release/birch.rc1
-
-Checkout Openfun repositories in `repos/`::
-
-    ansible-playbook -i localhost, --connection=local fun-repos.yml -e root_dir=$(pwd)/repos/
+    vagrant plugin install vagrant-vbguest
 
 Start the Vagrant instance::
 
-    vagrant up
-
-Run the install::
-
-    vagrant provision
+    vagrant up --provision
 
 In order to run the ansible tasks individually::
 

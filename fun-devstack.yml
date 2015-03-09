@@ -11,15 +11,19 @@
     python: "{{ virtualenv }}/bin/python"
 
   tasks:
+
+    - name: Update apt cache and upgrade apt packages
+      apt: update_cache=yes upgrade=yes cache_valid_time=3600
+      sudo: yes
+
+    - name: Checkout fun-apps code
+      git: repo=https://github.com/openfun/fun-apps dest={{ edxapp_home }}/fun-apps/ version={{ fun_release }}
+
     - name: Fix venv permissions
       file:
         path={{ edx_ansible_venv }}
         state=directory
         recurse=yes owner=edx-ansible group=edx-ansible
-      sudo: yes
-
-    - name: Update apt cache and upgrade apt packages
-      apt: update_cache=yes upgrade=yes cache_valid_time=3600
       sudo: yes
 
     - debug: msg="Running Edx ansible scripts for release {{ openedx_release }} (FUN release {{ openedx_fun_release }})"
@@ -47,6 +51,10 @@
       sudo_user: edxapp
     - name: Install fun-apps dm-xblock requirements
       pip: virtualenv={{ virtualenv }} requirements="{{ edxapp_home }}/fun-apps/requirements/dm-xblock.txt"
+      sudo: yes
+      sudo_user: edxapp
+    - name: Install fun-apps dev requirements
+      pip: virtualenv={{ virtualenv }} requirements="{{ edxapp_home }}/fun-apps/requirements/dev.txt"
       sudo: yes
       sudo_user: edxapp
 

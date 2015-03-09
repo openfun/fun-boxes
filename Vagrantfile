@@ -80,6 +80,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "fun-devstack.yml"
     ansible.extra_vars = {
+      fun_release: fun_release,
       openedx_release: openedx_release[:name],
       openedx_fun_release: openedx_fun_release
     }
