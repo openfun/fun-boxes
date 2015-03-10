@@ -14,15 +14,20 @@ CPU_COUNT = 2
 # a Vagrant box from the internet.
 fun_releases = {
   "2.6" => {
+    :ref =>"fun/release-2.6",
     :name => "named-release/aspen", :box => "aspen-devstack-1", :file => "20141028-aspen-devstack-1.box"
   },
   "2.7" => {
+    :ref =>"fun/release-2.7",
+    :name => "named-release/birch.rc1", :box => "birch-devstack-rc1", :file => "20150203-birch-devstack-rc1.box"
+  },
+  "master" => {
+    :ref =>"fun/release-2.7",
     :name => "named-release/birch.rc1", :box => "birch-devstack-rc1", :file => "20150203-birch-devstack-rc1.box"
   }
 }
-fun_release = (ENV["FUN_RELEASE"] or "2.7")
+fun_release = (ENV["FUN_RELEASE"] or "master")
 openedx_release = fun_releases[fun_release]
-openedx_fun_release = "fun/release-" + fun_release
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -32,11 +37,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box     = openedx_release[:box]
   config.vm.box_url = "http://files.edx.org/vagrant-images/#{openedx_release[:file]}"
 
-  config.vm.network :forwarded_port, guest: 8000, host: 8000
-  config.vm.network :forwarded_port, guest: 8001, host: 8001
-  config.vm.network :forwarded_port, guest: 18080, host: 18080
-  config.vm.network :forwarded_port, guest: 8765, host: 8765
-  config.vm.network :forwarded_port, guest: 9200, host: 9200
+  unless ENV['VAGRANT_NO_PORT_FORWARDING']
+      config.vm.network :forwarded_port, guest: 8000, host: 8000
+      config.vm.network :forwarded_port, guest: 8001, host: 8001
+      config.vm.network :forwarded_port, guest: 18080, host: 18080
+      config.vm.network :forwarded_port, guest: 8765, host: 8765
+      config.vm.network :forwarded_port, guest: 9200, host: 9200
+  end
   config.ssh.insert_key = true
 
   config.vm.synced_folder  ".", "/vagrant", disabled: true
@@ -82,7 +89,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible.extra_vars = {
       fun_release: fun_release,
       openedx_release: openedx_release[:name],
-      openedx_fun_release: openedx_fun_release
+      openedx_fun_release: openedx_release[:ref]
     }
   end
 end
