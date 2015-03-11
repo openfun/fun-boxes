@@ -18,6 +18,10 @@
       apt: update_cache=yes upgrade=yes cache_valid_time=3600
     - name: Uninstall google-chrome
       apt: name=google-chrome-stable state=absent
+    - name: Uninstall firefox
+      apt: name=firefox state=absent
+    - name: Install mysql-client-5.5
+      apt: name=mysql-client-5.5 state=present
 
     - name: Create fun-apps folder
       file: state=directory path={{ edxapp_home }}/fun-apps/ owner=edxapp group=edxapp recurse=yes
@@ -58,15 +62,10 @@
         path={{ edx_ansible_venv }}
         state=directory
         recurse=yes owner=edx-ansible group=edx-ansible
-    - name: Install setuptools
-      pip: virtualenv={{ virtualenv }} name=setuptools state=latest
+    - name: Install old distribute
+      pip: virtualenv={{ virtualenv }} name=distribute state=present version=0.6.4
       sudo_user: edxapp
-    - name: Upgrade setuptools (yes, it's necessary)
-      pip: virtualenv={{ virtualenv }} name=setuptools state=latest
-      sudo_user: edxapp
-    - name: Upgrade pip
-      pip: virtualenv={{ virtualenv }} name=pip state=latest
-      sudo_user: edxapp
+
     - debug: msg="Running Edx ansible scripts for release {{ openedx_release }} (FUN release {{ openedx_fun_release }})"
       tags:
           - edx-devstack
