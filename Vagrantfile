@@ -48,8 +48,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.synced_folder  ".", "/vagrant", disabled: true
 
-  # This is for enabling NFS
-  config.vm.network :private_network, ip: "10.11.12.13"
+  # Assign a fixed IP
+  config.vm.network :private_network, type: "dhcp"
 
   # If this environment variable is defined, we mount the OpenEdx and OpenFUN
   # repositories from this folder to their corresponding locations in the VM

@@ -74,6 +74,13 @@ to manually log in to the virtual machine and upgrade packages::
     vagrant ssh
     sudo apt-get update && sudo apt-get upgrade
 
+Cloning FUN repositories takes forever
+--------------------------------------
+
+If your repositories use the ssh git remotes, then git might get stuck on
+verifying the fingerprint of the repository. You can solve this issue by
+manually adding your private key to /edx/app/edxapp/.ssh/.
+
 Other issues
 ------------
 

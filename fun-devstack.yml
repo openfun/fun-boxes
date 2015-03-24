@@ -11,51 +11,67 @@
     virtualenv: "{{ edxapp_home }}/venvs/edxapp"
     edx_ansible_venv: "{{ edxapp_root }}/edx_ansible/venvs/edx_ansible"
     python: "{{ virtualenv }}/bin/python"
+    mount_base: "{{ lookup('env', 'VAGRANT_MOUNT_BASE') }}"
 
   tasks:
-
-    - name: Update apt cache and upgrade apt packages
-      apt: update_cache=yes upgrade=yes cache_valid_time=3600
+    - name: Update apt cache
+      apt: update_cache=yes cache_valid_time=3600
     - name: Uninstall google-chrome
       apt: name=google-chrome-stable state=absent
     - name: Uninstall firefox
       apt: name=firefox state=absent
     - name: Install mysql-client-5.5
       apt: name=mysql-client-5.5 state=present
+    - name: Make sure no flag file prevents mysql-5.5 install
+      file: path=/var/lib/mysql/debian-5.6.flag state=absent
 
+    - debug: var=mount_base
     - name: Create fun-apps folder
-      file: state=directory path={{ edxapp_home }}/fun-apps/ owner=edxapp group=edxapp recurse=yes
+      file: state=directory path={{ edxapp_home }}/fun-apps/ owner=edxapp group=edxapp
+      when: mount_base == ""
     - name: Create edx-platform folder
-      file: state=directory path={{ edxapp_home }}/edx-platform/ owner=edxapp group=edxapp recurse=yes
+      file: state=directory path={{ edxapp_home }}/edx-platform/ owner=edxapp group=edxapp
+      when: mount_base == ""
     - name: Create themes/fun folder
       file: state=directory path={{ edxapp_home }}/themes/fun/ owner=edxapp group=edxapp
+      when: mount_base == ""
     - name: Create cs_comments_service folder
       file: state=directory path={{ edxapp_root }}/forum/cs_comments_service/ owner=forum group=forum
 
     - name: Checkout fun-apps code
       git: repo=https://github.com/openfun/fun-apps dest={{ edxapp_home }}/fun-apps/ version={{ fun_release }}
       sudo_user: edxapp
+      when: mount_base == ""
     - name: Checkout themes/fun code
       git: repo=https://github.com/openfun/edx-theme dest={{ edxapp_home }}/themes/fun version={{ fun_release }}
       sudo_user: edxapp
+      when: mount_base == ""
     - name: Checkout edx-platform code
       git: repo=https://github.com/openfun/edx-platform dest={{ edxapp_home }}/edx-platform/ version={{ openedx_fun_release }}
       sudo_user: edxapp
+      when: mount_base == ""
 
     - name: Create test report folder
-      file: state=directory path={{ edxapp_home }}/edx-platform/reports/ owner=edxapp group=edxapp
+      file: state=directory path={{ edxapp_home }}/edx-platform/reports/
+      sudo_user: edxapp
     - name: Create test report lms folder
-      file: state=directory path={{ edxapp_home }}/edx-platform/reports/lms owner=edxapp group=edxapp
+      file: state=directory path={{ edxapp_home }}/edx-platform/reports/lms
+      sudo_user: edxapp
     - name: Create test report cms folder
-      file: state=directory path={{ edxapp_home }}/edx-platform/reports/cms owner=edxapp group=edxapp
+      file: state=directory path={{ edxapp_home }}/edx-platform/reports/cms
+      sudo_user: edxapp
     - name: Create .testids folder
-      file: state=directory path={{ edxapp_home }}/edx-platform/.testids/ owner=edxapp group=edxapp
+      file: state=directory path={{ edxapp_home }}/edx-platform/.testids/
+      sudo_user: edxapp
     - name: Create .testids lms folder
-      file: state=directory path={{ edxapp_home }}/edx-platform/.testids/lms owner=edxapp group=edxapp
+      file: state=directory path={{ edxapp_home }}/edx-platform/.testids/lms
+      sudo_user: edxapp
     - name: Create .testids cms folder
-      file: state=directory path={{ edxapp_home }}/edx-platform/.testids/cms owner=edxapp group=edxapp
+      file: state=directory path={{ edxapp_home }}/edx-platform/.testids/cms
+      sudo_user: edxapp
     - name: Create attestations folder
-      file: state=directory path=/edx/var/edxapp/attestations/ owner=edxapp group=edxapp
+      file: state=directory path=/edx/var/edxapp/attestations/
+      sudo_user: edxapp
 
     - name: Fix venv permissions
       file:
