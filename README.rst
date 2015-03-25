@@ -12,7 +12,7 @@ Requirements
 
 You are going to need ansible and vagrant to install and run the OpenFUN virtual image::
 
-    sudo apt-get install ansible virtualbox
+    sudo apt-get install ansible virtualbox vagrant
 
 Install vagrant-vbguest plugin::
 
