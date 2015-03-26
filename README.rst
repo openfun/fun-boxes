@@ -10,9 +10,9 @@ with Ansible scripts.
 Requirements
 ============
 
-You are going to need ansible and vagrant to install and run the OpenFUN virtual image::
+You are going to need vagrant(>= 1.5.3), ansible, and virtualbox to install and run the OpenFUN virtual image:
 
-    sudo apt-get install ansible virtualbox vagrant
+    sudo apt-get install vagrant ansible virtualbox 
 
 Install vagrant-vbguest plugin::
 
