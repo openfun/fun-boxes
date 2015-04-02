@@ -20,6 +20,11 @@ Install vagrant-vbguest plugin::
 
 Install
 =======
+Get the Vagrant File and ansible playbook:
+------------------------------------------
+
+    curl -L https://rawgit.com/openfun/fun-boxes/master/Vagrantfile > Vagrantfile
+    curl -L https://rawgit.com/openfun/fun-boxes/master/fun-devstack.yml > fun-devstack.yml
 
 For testing
 ------------
