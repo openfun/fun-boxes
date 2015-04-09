@@ -21,9 +21,13 @@ fun_releases = {
     :ref =>"fun/release-2.7",
     :name => "named-release/birch.rc1", :box => "birch-devstack-rc1", :file => "20150203-birch-devstack-rc1.box"
   },
+  "2.9" => {
+    :ref =>"fun/release-2.9",
+    :name => "named-release/birch", :box => "birch-devstack", :file => "20150224-birch-devstack.box"
+  },
   "master" => {
-    :ref =>"fun/release-2.7",
-    :name => "named-release/birch.rc1", :box => "birch-devstack-rc1", :file => "20150203-birch-devstack-rc1.box"
+    :ref =>"fun/release-2.9",
+    :name => "named-release/birch", :box => "birch-devstack", :file => "20150224-birch-devstack.box"
   }
 }
 fun_release = (ENV["FUN_RELEASE"] or "master")
