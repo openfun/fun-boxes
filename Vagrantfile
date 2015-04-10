@@ -80,6 +80,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Allow DNS to work for Ubuntu 12.10 host
     # http://askubuntu.com/questions/238040/how-do-i-fix-name-service-for-vagrant-client
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    # Solve this issue: https://www.virtualbox.org/ticket/13002
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "off"]
   end
 
   # Use vagrant-vbguest plugin to make sure Guest Additions are in sync
