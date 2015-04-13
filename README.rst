@@ -81,6 +81,25 @@ If your repositories use the ssh git remotes, then git might get stuck on
 verifying the fingerprint of the repository. You can solve this issue by
 manually adding your private key to /edx/app/edxapp/.ssh/.
 
+DHCP error
+----------
+
+On versions of Vagrant older than 1.7.3 you might encounter the following error:
+
+    A host only network interface you're attempting to configure via DHCP
+    already has a conflicting host only adapter with DHCP enabled. The
+    DHCP on this adapter is incompatible with the DHCP settings. Two
+    host only network interfaces are not allowed to overlap, and each
+    host only network interface can have only one DHCP server. Please
+    reconfigure your host only network or remove the virtual machine
+    using the other host only network.
+
+The nitty-gritty details are described here: https://github.com/mitchellh/vagrant/issues/3083
+
+This issue can be solved by running::
+
+    VBoxManage dhcpserver remove --netname HostInterfaceNetworking-vboxnet0
+
 Other issues
 ------------
 
