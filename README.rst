@@ -20,6 +20,11 @@ Install vagrant-vbguest plugin::
 
 Install
 =======
+Get the Vagrant File and ansible playbook:
+------------------------------------------
+
+    curl -L https://rawgit.com/openfun/fun-boxes/master/Vagrantfile > Vagrantfile
+    curl -L https://rawgit.com/openfun/fun-boxes/master/fun-devstack.yml > fun-devstack.yml
 
 For testing
 ------------
@@ -48,6 +53,11 @@ You now have a virtual machine containing a working instance of FUN. You can
 log into the VM::
 
     vagrant ssh
+
+Create the databases and migrate:
+
+    fun lms.dev syncdb
+    fun lms.dev migrate
 
 Start an LMS webserver::
 
@@ -104,3 +114,7 @@ Other issues
 ------------
 
 If other issues arise, feel free to open a ticket on this Github project.
+
+Release 2.9:
+
+Issues with distribute in requirements/edx/base.txt => Commented out.
