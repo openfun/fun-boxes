@@ -20,6 +20,10 @@
       apt: name=google-chrome-stable state=absent
     - name: Uninstall firefox
       apt: name=firefox state=absent
+    - name: Uninstall myssql 5.6
+      apt: name=mysql-server-5.6 state=absent purge=yes
+    - name: Install myssql-common (5.5)
+      apt: name=mysql-common=5.5.41-0ubuntu0.12.04.1 state=present
     - name: Install mysql-client-5.5
       apt: name=mysql-client-5.5 state=present
     - name: Make sure no flag file prevents mysql-5.5 install
