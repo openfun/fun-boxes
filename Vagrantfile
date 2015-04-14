@@ -39,7 +39,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Creates an edX devstack VM from an official release
   # Note that these images are probably not compatible with vmware
   config.vm.box     = openedx_release[:box]
-  config.vm.box_url = "http://files.edx.org/vagrant-images/#{openedx_release[:file]}"
+  config.vm.box_url = "http://files.alt.openfun.fr/vagrant-images/edx/#{openedx_release[:file]}"
 
   unless ENV['VAGRANT_NO_PORT_FORWARDING']
       config.vm.network :forwarded_port, guest: 8000, host: 8000
