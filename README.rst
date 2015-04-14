@@ -10,10 +10,20 @@ with Ansible scripts.
 Requirements
 ============
 
+A couple basic development packages are required::
+
+    sudo apt-get install g++ make
+
 You are going to need vagrant(>= 1.5.3), ansible, and virtualbox to install and
 run the OpenFUN virtual image::
 
     sudo apt-get install vagrant ansible virtualbox 
+
+Note that recent versions of Vagrant can be downloaded from
+http://www.vagrantup.com/downloads.
+
+If Virtualbox is not available in your package repositories, it may be
+downloaded directly from https://www.virtualbox.org/wiki/Linux_Downloads.
 
 Install vagrant-vbguest plugin::
 
