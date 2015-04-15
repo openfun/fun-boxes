@@ -111,6 +111,44 @@ This issue can be solved by running::
 
     VBoxManage dhcpserver remove --netname HostInterfaceNetworking-vboxnet0
 
+MySQL job "failed to start"
+---------------------------
+
+When downgrading from mysql-5.6, mysql-server may fail to start after install:
+
+    ...
+    Setting up mysql-server-5.5 (5.5.41-0ubuntu0.12.04.1) ...
+    start: Job failed to start
+    invoke-rc.d: initscript mysql, action "start" failed.
+
+You may diagnose this problem more precisely by starting the mysql daemon manually::
+
+    $ vagrant ssh
+    $ sudo mysqld
+    150415  7:34:08 [Warning] Using unique option prefix key_buffer instead of key_buffer_size is deprecated and will be removed in a future release. Please use the full name instead.
+    150415  7:34:08 [Warning] Using unique option prefix myisam-recover instead of myisam-recover-options is deprecated and will be removed in a future release. Please use the full name instead.
+    150415  7:34:08 [Note] Plugin 'FEDERATED' is disabled.
+    150415  7:34:08 InnoDB: The InnoDB memory heap is disabled
+    150415  7:34:08 InnoDB: Mutexes and rw_locks use GCC atomic builtins
+    150415  7:34:08 InnoDB: Compressed tables use zlib 1.2.3.4
+    150415  7:34:08 InnoDB: Initializing buffer pool, size = 128.0M
+    150415  7:34:08 InnoDB: Completed initialization of buffer pool
+    InnoDB: Error: log file ./ib_logfile0 is of different size 0 50331648 bytes
+    InnoDB: than specified in the .cnf file 0 5242880 bytes!
+    150415  7:34:08 [ERROR] Plugin 'InnoDB' init function returned error.
+    150415  7:34:08 [ERROR] Plugin 'InnoDB' registration as a STORAGE ENGINE failed.
+    150415  7:34:08 [ERROR] Unknown/unsupported storage engine: InnoDB
+    150415  7:34:08 [ERROR] Aborting
+
+This problem is caused by the InnoDb log file which was not updated prior to
+upgrade. You may simply uninstall all mysql packages, remove the log files and
+restart install::
+
+    $ sudo apt-get remove --purge mysql-*
+    $ sudo rm -rf /var/lib/mysql/
+    $ sudo apt-get install mysql-server-5.5
+
+
 Other issues
 ------------
 
