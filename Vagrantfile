@@ -14,24 +14,19 @@ CPU_COUNT = 2
 # a Vagrant box from the internet.
 fun_releases = {
   "2.6" => {
-    :ref =>"fun/release-2.6",
     :name => "named-release/aspen", :box => "aspen-devstack-1", :file => "20141028-aspen-devstack-1.box"
   },
   "2.7" => {
-    :ref =>"fun/release-2.7",
     :name => "named-release/birch.rc1", :box => "birch-devstack-rc1", :file => "20150203-birch-devstack-rc1.box"
   },
   "2.9" => {
-    :ref =>"fun/release-2.9",
     :name => "named-release/birch", :box => "birch-devstack", :file => "20150224-birch-devstack.box"
   },
-  "master" => {
-    :ref =>"fun/release-2.9",
-    :name => "named-release/birch", :box => "birch-devstack", :file => "20150224-birch-devstack.box"
-  }
 }
-fun_release = (ENV["FUN_RELEASE"] or "master")
+latest_fun_release = "2.9"
+fun_release = (ENV["FUN_RELEASE"] or latest_fun_release)
 openedx_release = fun_releases[fun_release]
+openedx_fun_release = "fun/release-#{fun_release}"
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -95,7 +90,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible.extra_vars = {
       fun_release: fun_release,
       openedx_release: openedx_release[:name],
-      openedx_fun_release: openedx_release[:ref]
+      openedx_fun_release: openedx_fun_release,
     }
   end
 end
