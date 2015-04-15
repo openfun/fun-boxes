@@ -82,6 +82,10 @@ You may then package the upgraded VM::
 
     vagrant package --output openfun-2.10.box
 
+And even create a torrent file to distribute it::
+
+    ctorrent -t -u udp://tracker.publicbt.com:80 -s openfun-2.10.box.torrent openfun-2.10.box
+
 Commands
 ========
 
