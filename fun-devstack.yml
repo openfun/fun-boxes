@@ -20,14 +20,14 @@
       apt: name=google-chrome-stable state=absent
     - name: Uninstall firefox
       apt: name=firefox state=absent
-    - name: Uninstall myssql 5.6
+    - name: Uninstall mysql 5.6
       apt: name=mysql-server-5.6 state=absent purge=yes
-    - name: Install myssql-common (5.5)
-      apt: name=mysql-common=5.5.41-0ubuntu0.12.04.1 state=present
     - name: Install mysql-client-5.5
       apt: name=mysql-client-5.5 state=present
     - name: Make sure no flag file prevents mysql-5.5 install
       file: path=/var/lib/mysql/debian-5.6.flag state=absent
+    - name: Install external version of meliae (not installable via pypi)
+      apt: name=python-meliae state=present
 
     - debug: var=mount_base
     - name: Create fun-apps folder
@@ -55,6 +55,36 @@
       sudo_user: edxapp
       when: mount_base == ""
 
+    - name: Fix venv permissions
+      file:
+        path={{ edx_ansible_venv }}
+        state=directory
+        recurse=yes owner=edx-ansible group=edx-ansible
+    - name: Install pip (version found in edx/requirements/pre.txt)
+      pip: virtualenv={{ virtualenv }} name=pip version=6.0.8
+      sudo_user: edxapp
+    - name: Install setuptools
+      pip: virtualenv={{ virtualenv }} name=setuptools version=0.6c9
+      sudo_user: edxapp
+    - name: Install distribute (older version than necessary)
+      pip: virtualenv={{ virtualenv }} name=distribute version=0.6.49
+      sudo_user: edxapp
+
+    - debug: msg="Running Edx ansible scripts for release {{ openedx_release }} (FUN release {{ openedx_fun_release }})"
+      tags:
+          - edx-devstack
+    - name: Run vagrant-devstack.yml playbook from Edx
+      shell: . /edx/app/edx_ansible/venvs/edx_ansible/bin/activate &&
+          ansible-playbook -i localhost, -c local vagrant-devstack.yml
+          -e configuration_version={{ openedx_release }}
+          -e edx_platform_version={{ openedx_fun_release }}
+          -e certs_version={{ openedx_release }}
+          -e forum_version={{ openedx_release }}
+          -e xqueue_version={{ openedx_release }}
+        chdir="/edx/app/edx_ansible/edx_ansible/playbooks"
+      tags:
+          - edx
+
     - name: Create test report folder
       file: state=directory path={{ edxapp_home }}/edx-platform/reports/
       sudo_user: edxapp
@@ -77,34 +107,10 @@
       file: state=directory path=/edx/var/edxapp/attestations/
       sudo_user: edxapp
 
-    - name: Fix venv permissions
-      file:
-        path={{ edx_ansible_venv }}
-        state=directory
-        recurse=yes owner=edx-ansible group=edx-ansible
-    - name: Install old distribute
-      pip: virtualenv={{ virtualenv }} name=distribute state=present version=0.6.4
-      sudo_user: edxapp
-
-    - debug: msg="Running Edx ansible scripts for release {{ openedx_release }} (FUN release {{ openedx_fun_release }})"
-      tags:
-          - edx-devstack
-    - name: Run vagrant-devstack.yml playbook from Edx
-      shell: . /edx/app/edx_ansible/venvs/edx_ansible/bin/activate &&
-          ansible-playbook -i localhost, -c local vagrant-devstack.yml
-          -e configuration_version={{ openedx_release }}
-          -e edx_platform_version={{ openedx_fun_release }}
-          -e certs_version={{ openedx_release }}
-          -e forum_version={{ openedx_release }}
-          -e xqueue_version={{ openedx_release }}
-        chdir="/edx/app/edx_ansible/edx_ansible/playbooks"
-      tags:
-          - edx
-
     - name: Install setuptools
       pip: virtualenv={{ virtualenv }} name=setuptools state=latest
       sudo_user: edxapp
-    - name: Upgrate setuptools (yes, AGAIN)
+    - name: Upgrade setuptools (yes, AGAIN)
       pip: virtualenv={{ virtualenv }} name=setuptools state=latest
       sudo_user: edxapp
     - name: Install fun-apps base requirements
