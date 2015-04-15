@@ -8,9 +8,13 @@ VAGRANTFILE_API_VERSION = "2"
 MEMORY = 2048
 CPU_COUNT = 2
 
+latest_fun_release = "2.9"
+fun_release = (ENV["FUN_RELEASE"] or latest_fun_release)
+openedx_fun_release = "fun/release-#{fun_release}"
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box     = "openfun-2.9"
-  config.vm.box_url = "http://files.alt.openfun.fr/vagrant-images/fun/openfun-2.9.box"
+  config.vm.box     = "openfun-#{fun_release}"
+  config.vm.box_url = "http://files.alt.openfun.fr/vagrant-images/fun/openfun-#{fun_release}.box"
 
   unless ENV['VAGRANT_NO_PORT_FORWARDING']
       config.vm.network :forwarded_port, guest: 8000, host: 8000
@@ -58,4 +62,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Use vagrant-vbguest plugin to make sure Guest Additions are in sync
   config.vbguest.auto_reboot = true
   config.vbguest.auto_update = true
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "upgrade.yml"
+    ansible.extra_vars = {
+      fun_release: fun_release,
+      openedx_fun_release: openedx_fun_release,
+    }
+  end
 end

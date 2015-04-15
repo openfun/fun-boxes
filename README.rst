@@ -32,12 +32,25 @@ Install vagrant-vbguest plugin::
 Install
 =======
 
-For testing
-------------
+Running an existing release
+---------------------------
 
-Start the Vagrant instance::
+OpenFUN provides ready-made VirtualBox images::
 
-    vagrant up --provision # go grab a coffee
+    cd releases/
+    vagrant up
+
+You may also specify the release to use::
+
+    FUN_RELEASE=2.9 vagrant up
+
+Provisioning a VM from scratch
+------------------------------
+
+This is a risky and lengthy process that will require running the OpenEdx provisioning playbook::
+
+    cd devstack
+    vagrant up --provision # grab a coffee
 
 For development
 ---------------
@@ -50,7 +63,24 @@ repositories will then be mounted in the VM::
     git clone https://github.com/openfun/fun-apps $VAGRANT_MOUNT_BASE/fun-apps/
     git clone https://github.com/openfun/edx-platform $VAGRANT_MOUNT_BASE/edx-platform/
     git clone https://github.com/openfun/edx-theme $VAGRANT_MOUNT_BASE/themes/fun/
-    vagrant up --provision
+
+You may then start your VM as usual::
+
+    cd releases/
+    vagrant up
+
+Upgrading an existing VM
+------------------------
+
+Starting from an existing VM, e.g: release 2.9, you may wish to upgrade it to
+2.10, say for packaging. The following will run the `upgrade.yml` playbook::
+
+    cd releases/
+    FUN_RELEASE=2.10 vagrant up --provision
+
+You may then package the upgraded VM::
+
+    vagrant package --output openfun-2.10.box
 
 Commands
 ========
