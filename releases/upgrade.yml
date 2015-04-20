@@ -17,12 +17,12 @@
 
   tasks:
 
-    #- name: Checkout fun-apps code
-      #git: repo=https://github.com/openfun/fun-apps dest={{ edxapp_home }}/fun-apps/ version={{ fun_release }}
-    #- name: Checkout themes/fun code
-      #git: repo=https://github.com/openfun/edx-theme dest={{ edxapp_home }}/themes/fun version={{ fun_release }}
-    #- name: Checkout edx-platform code
-      #git: repo=https://github.com/openfun/edx-platform dest={{ edxapp_home }}/edx-platform/ version={{ openedx_fun_release }}
+    - name: Checkout fun-apps code
+      git: repo=https://github.com/openfun/fun-apps dest={{ edxapp_home }}/fun-apps/ version={{ fun_release }}
+    - name: Checkout themes/fun code
+      git: repo=https://github.com/openfun/edx-theme dest={{ edxapp_home }}/themes/fun version={{ fun_release }}
+    - name: Checkout edx-platform code
+      git: repo=https://github.com/openfun/edx-platform dest={{ edxapp_home }}/edx-platform/ version={{ openedx_fun_release }}
 
     - name: Update requirements
       shell: "{{ virtualenv }}/bin/fun lms.dev requirements"
