@@ -11,10 +11,16 @@ CPU_COUNT = 2
 latest_fun_release = "2.9"
 fun_release = (ENV["FUN_RELEASE"] or latest_fun_release)
 openedx_fun_release = "fun/release-#{fun_release}"
+if ENV["VAGRANT_BOXES"]
+    box_url = "file://#{ENV["VAGRANT_BOXES"]}/openfun-#{fun_release}.box"
+else
+    box_url = "http://files.alt.openfun.fr/vagrant-images/fun/openfun-#{fun_release}.box"
+end
+
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box     = "openfun-#{fun_release}"
-  config.vm.box_url = "http://files.alt.openfun.fr/vagrant-images/fun/openfun-#{fun_release}.box"
+  config.vm.box_url = box_url
 
   unless ENV['VAGRANT_NO_PORT_FORWARDING']
       config.vm.network :forwarded_port, guest: 8000, host: 8000
