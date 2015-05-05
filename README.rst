@@ -117,6 +117,13 @@ Run OpenFUN unit tests::
 Troubleshooting
 ===============
 
+"It appears your machine doesn't support NFS"
+---------------------------------------------
+
+Make sure nfs is supported by your kernel::
+
+    sudo apt-get install nfs-kernel-server
+
 apt-get upgrade takes too long
 ------------------------------
 
