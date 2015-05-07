@@ -114,6 +114,22 @@ Run OpenFUN unit tests::
 
     fun lms.test test ../fun-apps
 
+Optional variables
+==================
+
+The following environment variables can be used to customize your guest environment.
+
+- VAGRANT_USE_VBOXF: set this variable to "true" to use vboxfs instead of nfs.
+- VAGRANT_MOUNT_BASE: set this variable to an existing path that contains the
+  fun-apps, edx-theme and edx-platform repositories (e.g:
+  /home/user/fun/repos/) to mount them to /edx/app/edxapp/<reponame>.
+- VAGRANT_NO_PORT_FORWARDING: disable port forwarding.
+- VM_CPU_COUNT: the number of allocated CPUs. Defaults to 2.
+- VM_MEMORY: the amount in Mb of allocated memory, in Mb. Defaults to 2048.
+- FUN_RELEASE: the git version of FUN repositories to checkout. Can be a git
+  sha1, tag or remote branch name. Defaults to the latest version, e.g: 2.11.
+
+
 Troubleshooting
 ===============
 
