@@ -5,8 +5,8 @@ end
 
 VAGRANTFILE_API_VERSION = "2"
 
-MEMORY = 2048
-CPU_COUNT = 2
+VM_MEMORY = (ENV["VM_MEMORY"] or "1024")
+VM_CPU_COUNT = (ENV["VM_CPU_COUNT"] or "2")
 
 latest_fun_release = "2.11"
 fun_release = (ENV["FUN_RELEASE"] or latest_fun_release)
@@ -56,8 +56,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, "--memory", MEMORY.to_s]
-    vb.customize ["modifyvm", :id, "--cpus", CPU_COUNT.to_s]
+    vb.customize ["modifyvm", :id, "--memory", VM_MEMORY]
+    vb.customize ["modifyvm", :id, "--cpus", VM_CPU_COUNT]
 
     # Allow DNS to work for Ubuntu 12.10 host
     # http://askubuntu.com/questions/238040/how-do-i-fix-name-service-for-vagrant-client
