@@ -133,6 +133,19 @@ The following environment variables can be used to customize your guest environm
 Troubleshooting
 ===============
 
+Cannot connect to guest host via ssh
+------------------------------------
+
+The first step to diagnose this problem is to check the SSH configuration of
+Vagrant for this particular VM:
+
+    vagrant ssh-config
+
+You can then try to login in verbose mode to the virtual machine by specifying
+explicitely the user, host, port and private key:
+
+    ssh -i /path/to/identity/file -P port -vvv user@host
+
 "It appears your machine doesn't support NFS"
 ---------------------------------------------
 
