@@ -119,6 +119,9 @@ Optional variables
 
 The following environment variables can be used to customize your guest environment.
 
+- VAGRANT_NETWORK_DHCP: define this variable to use DHCP instead of a fixed IP.
+- VAGRANT_NETWORK_IP: define this variable to customise the fixed IP of the
+  guest machine. Otherwise it will be 10.1.100.101.
 - VAGRANT_USE_VBOXF: set this variable to "true" to use vboxfs instead of nfs.
 - VAGRANT_MOUNT_BASE: set this variable to an existing path that contains the
   fun-apps, edx-theme and edx-platform repositories (e.g:
