@@ -227,6 +227,14 @@ restart install::
     $ sudo apt-get install mysql-server-5.5
 
 
+Django is very slow
+-------------------
+
+If you find that your development server is very slow, it might be because of
+DNS resolution. Try to alter the `/etc/hosts` file from the guest machine by
+following the instructions from
+http://stackoverflow.com/questions/28562968/django-1-4-18-dev-server-slow-to-respond-under-virtualbox/30356662#30356662
+
 Other issues
 ------------
 
