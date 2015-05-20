@@ -8,7 +8,7 @@ VAGRANTFILE_API_VERSION = "2"
 VM_MEMORY = (ENV["VM_MEMORY"] or "1024")
 VM_CPU_COUNT = (ENV["VM_CPU_COUNT"] or "2")
 
-latest_fun_release = "2.11"
+latest_fun_release = "2.12"
 fun_release = (ENV["FUN_RELEASE"] or latest_fun_release)
 openedx_fun_release = "fun/release-#{fun_release}"
 if ENV["VAGRANT_BOXES"]
