@@ -45,7 +45,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if ENV['VAGRANT_MOUNT_BASE']
     # Sync folders with NFS or VBOXFS
     def sync_folder(src, dst, config)
-      use_nfs = (ENV['VAGRANT_USE_VBOXFS'] == 'true') ? false : true
+      use_nfs = (ENV['VAGRANT_USE_VBOXFS'] != 'true')# use nfs by default
       full_src = ENV['VAGRANT_MOUNT_BASE'] + "/" + src
       if use_nfs
         config.vm.synced_folder full_src, dst, create: true, nfs: true

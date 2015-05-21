@@ -102,6 +102,10 @@ log into the VM::
 
     vagrant ssh
 
+Most commands should be run as user `edxapp`::
+
+    sudo su edxapp # note that exapp is not sudo user
+
 Start an LMS webserver::
 
     fun lms.dev run # open http://localhost:8000 in your browser
