@@ -22,7 +22,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box_url = box_url
 
   # Assign a fixed IP
-  config.vm.network :private_network, type: "dhcp" 
+  if ENV["VAGRANT_NETWORK_DHCP"]
+    config.vm.network :private_network, type: "dhcp"
+  else
+    config.vm.network :private_network, ip: (ENV["VAGRANT_NETWORK_IP"] or "10.1.100.101")
+  end
 
   unless ENV['VAGRANT_NO_PORT_FORWARDING']
       config.vm.network :forwarded_port, guest: 8000, host: 8000, auto_correct: true
@@ -35,13 +39,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.private_key_path = "vagrant_private_key"
 
   config.vm.synced_folder  ".", "/vagrant", disabled: true
-
-  # Assign a fixed IP
-  if ENV["VAGRANT_NETWORK_DHCP"]
-    config.vm.network :private_network, type: "dhcp"
-  else
-    config.vm.network :private_network, ip: (ENV["VAGRANT_NETWORK_IP"] or "10.1.100.101")
-  end
 
   # If this environment variable is defined, we mount the OpenEdx and OpenFUN
   # repositories from this folder to their corresponding locations in the VM
