@@ -77,6 +77,10 @@ You may then start your VM as usual::
     cd releases/
     vagrant up
 
+The directories containing your repositories will be mounted in your VM so that
+you can use your favorite IDE in your host environment and see the result in
+the MV.
+
 Upgrading an existing VM
 ------------------------
 
