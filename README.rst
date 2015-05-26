@@ -96,7 +96,7 @@ You may then package the upgraded VM::
 
 And even create a torrent file to distribute it::
 
-    ./create_torrent openfun-2.10.box
+    ./create_torrent.py openfun-2.10.box
 
 Commands
 ========
