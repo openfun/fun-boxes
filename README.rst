@@ -42,9 +42,7 @@ OpenFUN provides ready-made VirtualBox images::
 
 You may also specify the release to use::
 
-    FUN_RELEASE=2.9 vagrant up
-
-If a password is required to login, use "vagrant".
+    export FUN_RELEASE=2.9 vagrant
 
 Downloading the 4.3+Gb Virtualbox image via HTTP may be time consuming.
 Instead, we suggest to download the image by bittorrent from
@@ -75,7 +73,7 @@ repositories will then be mounted in the VM::
 You may then start your VM as usual::
 
     cd releases/
-    vagrant up
+    vagrant up --no-provision
 
 The directories containing your repositories will be mounted in your VM so that
 you can use your favorite IDE in your host environment and see the result in
