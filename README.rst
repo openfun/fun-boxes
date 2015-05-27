@@ -40,9 +40,9 @@ OpenFUN provides ready-made VirtualBox images::
     cd releases/
     vagrant up
 
-You may also specify the release to use::
+You may specify the release to use instead::
 
-    export FUN_RELEASE=2.9 vagrant
+    FUN_RELEASE=2.9 vagrant up
 
 Downloading the 4.3+Gb Virtualbox image via HTTP may be time consuming.
 Instead, we suggest to download the image by bittorrent from
@@ -66,8 +66,16 @@ OpenEdx repositories outside of the VM, in your host machine. The local
 repositories will then be mounted in the VM::
 
     export VAGRANT_MOUNT_BASE="/path/to/my/repos"
+
+    # Checkout master branch from fun-apps
     git clone https://github.com/openfun/fun-apps $VAGRANT_MOUNT_BASE/fun-apps/
+
+    # Checkout latest tag from edx-platform
     git clone https://github.com/openfun/edx-platform $VAGRANT_MOUNT_BASE/edx-platform/
+    cd $VAGRANT_MOUNT_BASE/edx-platform/
+    git checkout -b latest latest
+
+    # Checkout master branch from the FUN theme
     git clone https://github.com/openfun/edx-theme $VAGRANT_MOUNT_BASE/themes/fun/
 
 You may then start your VM as usual::
