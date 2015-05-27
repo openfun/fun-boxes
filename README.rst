@@ -157,6 +157,19 @@ explicitely the user, host, port and private key:
 
     ssh -i /path/to/identity/file -P port -vvv user@host
 
+Some kind of distribute/setuptools python issue
+-----------------------------------------------
+
+This is a frequent issue with OpenFUN. Some dependencies of FUN require a
+recent version of setuptools, while Open edX requires an older version of
+distribute. See [this pull
+request](https://github.com/edx/edx-platform/pull/7465/) for reference. In
+practice, this means you might have to manually install the 'right' (i.e: old)
+version of distribute and setuptools manually in your guest environment:
+
+    pip install setuptools==0.6c11
+    pip install distribute==0.6.49
+
 "It appears your machine doesn't support NFS"
 ---------------------------------------------
 
