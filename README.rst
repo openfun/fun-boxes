@@ -145,6 +145,7 @@ The following environment variables can be used to customize your guest environm
 - VM_MEMORY: the amount in Mb of allocated memory, in Mb. Defaults to 2048.
 - FUN_RELEASE: the git version of FUN repositories to checkout. Can be a git
   sha1, tag or remote branch name. Defaults to the latest version, e.g: 2.11.
+- FUN_MICROSITES: define this variable to provision your VM with microsite configuration.
 
 
 Troubleshooting

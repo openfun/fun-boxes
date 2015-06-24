@@ -6,9 +6,13 @@
   sudo: yes
   sudo_user: edxapp
   vars:
+    fun_release: "dev"
+    openedx_fun_release: "dev"
     edxapp_root: "/edx/app"
     edxapp_home: "{{ edxapp_root }}/edxapp"
     virtualenv: "{{ edxapp_home }}/venvs/edxapp"
+    fun_microsites: false
+    checkout_repos: true
     env:
       PATH: /edx/app/edxapp/venvs/edxapp/bin:/edx/app/edxapp/edx-platform/bin:/edx/app/edxapp/.rbenv/bin:/edx/app/edxapp/.rbenv/shims:/edx/app/edxapp/.gem/bin:/edx/app/edxapp/edx-platform/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       GEM_PATH: /edx/app/edxapp/.gem
@@ -19,21 +23,39 @@
 
     - debug: var=fun_release
     - debug: var=openedx_fun_release
+    - debug: var=fun_microsites
     - name: Checkout fun-apps code
       git: repo=https://github.com/openfun/fun-apps dest={{ edxapp_home }}/fun-apps/ version={{ fun_release }}
-    - name: Checkout themes/fun code
-      git: repo=https://github.com/openfun/edx-theme dest={{ edxapp_home }}/themes/fun version={{ fun_release }}
+      when: checkout_repos
     - name: Checkout edx-platform code
       git: repo=https://github.com/openfun/edx-platform dest={{ edxapp_home }}/edx-platform/ version={{ openedx_fun_release }}
+      when: checkout_repos
+    - name: Checkout themes/fun code
+      git: repo=https://github.com/openfun/edx-theme dest={{ edxapp_home }}/themes/fun version={{ fun_release }}
+      when: checkout_repos and not fun_microsites
+    - name: checkout fun-microsites code
+      git: repo=https://github.com/openfun/fun-microsites dest={{ edxapp_home }}/themes version={{ fun_release }}
+      when: checkout_repos and fun_microsites
+
+    - name: Create lms/cms.env.json
+      template: src={{ item }}.env.json.j2 dest=/edx/app/edxapp/{{ item }}.env.json
+      with_items:
+        - lms
+        - cms
+
+    - set_fact: lms_dev="lms.dev"
+      when: not fun_microsites
+    - set_fact: lms_dev="lms.microsite.dev"
+      when: fun_microsites
 
     - name: Update requirements
-      shell: "{{ virtualenv }}/bin/fun lms.dev requirements"
+      shell: "{{ virtualenv }}/bin/fun {{ lms_dev }} requirements"
       args:
         executable: /bin/bash
         chdir: "{{ edxapp_home}}/edx-platform"
       environment: env
     - name: Generate lms assets
-      shell: "{{ virtualenv }}/bin/fun lms.dev assets"
+      shell: "{{ virtualenv }}/bin/fun {{ lms_dev }} assets"
       args:
         chdir: "{{ edxapp_home}}/edx-platform"
       environment: env
@@ -44,7 +66,7 @@
       environment: env
 
     - name: Migrate lms
-      shell: "{{ virtualenv }}/bin/fun lms.dev migrate"
+      shell: "{{ virtualenv }}/bin/fun {{ lms_dev }} migrate"
       args:
           chdir: "{{ edxapp_home }}/edx-platform"
       environment: env
