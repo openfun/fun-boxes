@@ -8,9 +8,10 @@ VAGRANTFILE_API_VERSION = "2"
 VM_MEMORY = (ENV["VM_MEMORY"] or "1024")
 VM_CPU_COUNT = (ENV["VM_CPU_COUNT"] or "2")
 
-latest_fun_release = "2.13"
+latest_fun_release = "2.17.2"
+latest_openedx_fun_release = "2.17"
 fun_release = (ENV["FUN_RELEASE"] or latest_fun_release)
-openedx_fun_release = "fun/release-#{fun_release}"
+openedx_fun_release = "fun/release-#{ENV["OPENEDX_FUN_RELEASE"] or latest_openedx_fun_release}"
 if ENV["VAGRANT_BOXES"]
     box_url = "file://#{ENV["VAGRANT_BOXES"]}/openfun-#{fun_release}.box"
 else

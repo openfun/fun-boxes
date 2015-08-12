@@ -143,8 +143,9 @@ The following environment variables can be used to customize your guest environm
 - VAGRANT_NO_PORT_FORWARDING: disable port forwarding.
 - VM_CPU_COUNT: the number of allocated CPUs. Defaults to 2.
 - VM_MEMORY: the amount in Mb of allocated memory, in Mb. Defaults to 2048.
-- FUN_RELEASE: the git version of FUN repositories to checkout. Can be a git
-  sha1, tag or remote branch name. Defaults to the latest version, e.g: 2.11.
+- FUN_RELEASE, OPENEDX_FUN_RELEASE: the git version of FUN repositories and
+  FUN's edx-platform to checkout. May be a git sha1, tag or remote branch name.
+  Defaults to the latest versions, e.g: 2.11.
 - FUN_MICROSITES: define this variable to provision your VM with microsite configuration.
 
 
