@@ -36,18 +36,11 @@
     - name: Create edx-platform folder
       file: state=directory path={{ edxapp_home }}/edx-platform/ owner=edxapp group=edxapp
       when: mount_base == ""
-    - name: Create themes/fun folder
-      file: state=directory path={{ edxapp_home }}/themes/fun/ owner=edxapp group=edxapp
-      when: mount_base == ""
     - name: Create cs_comments_service folder
       file: state=directory path={{ edxapp_root }}/forum/cs_comments_service/ owner=forum group=forum
 
     - name: Checkout fun-apps code
       git: repo=https://github.com/openfun/fun-apps dest={{ edxapp_home }}/fun-apps/ version={{ fun_release }}
-      sudo_user: edxapp
-      when: mount_base == ""
-    - name: Checkout themes/fun code
-      git: repo=https://github.com/openfun/edx-theme dest={{ edxapp_home }}/themes/fun version={{ fun_release }}
       sudo_user: edxapp
       when: mount_base == ""
     - name: Checkout edx-platform code
@@ -121,36 +114,6 @@
       sudo_user: edxapp
     - name: Install fun-apps dev requirements
       pip: virtualenv={{ virtualenv }} requirements="{{ edxapp_home }}/fun-apps/requirements/dev.txt"
-      sudo_user: edxapp
-
-    - name: Ensure lms.env.json config uses a custom theme
-      lineinfile:
-        'dest={{ edxapp_home }}/lms.env.json
-        backrefs=yes
-        regexp="( +\"USE_CUSTOM_THEME\": )false(.*)"
-        line="\1true\2"'
-      sudo_user: edxapp
-    - name: Ensure lms.env.json config uses the fun theme
-      lineinfile:
-        'dest={{ edxapp_home }}/lms.env.json
-        backrefs=yes
-        regexp="( +\"THEME_NAME\": )\"\"(.*)"
-        line="\1\"fun\"\2"'
-      sudo_user: edxapp
-
-    - name: Ensure cms.env.json config uses a custom theme
-      lineinfile:
-        'dest={{ edxapp_home }}/cms.env.json
-        backrefs=yes
-        regexp="( +\"USE_CUSTOM_THEME\": )false(.*)"
-        line="\1true\2"'
-      sudo_user: edxapp
-    - name: Ensure cms.env.json config uses the fun theme
-      lineinfile:
-        'dest={{ edxapp_home }}/cms.env.json
-        backrefs=yes
-        regexp="( +\"THEME_NAME\": )\"\"(.*)"
-        line="\1\"fun\"\2"'
       sudo_user: edxapp
 
     - name: Syncdb for lms

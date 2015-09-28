@@ -30,9 +30,6 @@
     - name: Checkout edx-platform code
       git: repo=https://github.com/openfun/edx-platform dest={{ edxapp_home }}/edx-platform/ version={{ openedx_fun_release }}
       when: checkout_repos
-    - name: Checkout themes/fun code
-      git: repo=https://github.com/openfun/edx-theme dest={{ edxapp_home }}/themes/fun version={{ fun_release }}
-      when: checkout_repos and not fun_microsites
     - name: checkout fun-microsites code
       git: repo=https://github.com/openfun/fun-microsites dest={{ edxapp_home }}/themes version={{ fun_release }}
       when: checkout_repos and fun_microsites

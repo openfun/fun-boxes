@@ -75,9 +75,6 @@ repositories will then be mounted in the VM::
     cd $VAGRANT_MOUNT_BASE/edx-platform/
     git checkout -b latest latest
 
-    # Checkout master branch from the FUN theme
-    git clone https://github.com/openfun/edx-theme $VAGRANT_MOUNT_BASE/themes/fun/
-
 You may then start your VM as usual::
 
     cd releases/
@@ -138,8 +135,8 @@ The following environment variables can be used to customize your guest environm
   guest machine. Otherwise it will be 10.1.100.101.
 - VAGRANT_USE_VBOXF: set this variable to "true" to use vboxfs instead of nfs.
 - VAGRANT_MOUNT_BASE: set this variable to an existing path that contains the
-  fun-apps, edx-theme and edx-platform repositories (e.g:
-  /home/user/fun/repos/) to mount them to /edx/app/edxapp/<reponame>.
+  fun-apps and edx-platform repositories (e.g: /home/user/fun/repos/) to mount
+  them to /edx/app/edxapp/<reponame>.
 - VAGRANT_NO_PORT_FORWARDING: disable port forwarding.
 - VM_CPU_COUNT: the number of allocated CPUs. Defaults to 2.
 - VM_MEMORY: the amount in Mb of allocated memory, in Mb. Defaults to 2048.

@@ -60,8 +60,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     sync_folder "fun-apps", "/edx/app/edxapp/fun-apps", config
     if FUN_MICROSITES
         sync_folder "themes/fun-microsites", "/edx/app/edxapp/fun-microsites/", config
-    else
-        sync_folder "themes/fun", "/edx/app/edxapp/themes/fun", config
     end
   end
 
