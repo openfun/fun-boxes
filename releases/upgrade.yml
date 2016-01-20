@@ -24,6 +24,16 @@
     - debug: var=fun_release
     - debug: var=openedx_fun_release
     - debug: var=fun_microsites
+
+
+    - name: Clean edx-platform and fun-apps code dirs
+      shell: >
+        chdir={{ item }}
+        git clean -fx
+      with_items:
+        - "{{ edxapp_home }}/fun-apps/"
+        - "{{ edxapp_home }}/edx-platform/"
+
     - name: Checkout fun-apps code
       git: repo=https://github.com/openfun/fun-apps dest={{ edxapp_home }}/fun-apps/ version={{ fun_release }}
       when: checkout_repos
