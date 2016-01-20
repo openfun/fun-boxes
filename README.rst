@@ -143,7 +143,6 @@ The following environment variables can be used to customize your guest environm
 - FUN_RELEASE, OPENEDX_FUN_RELEASE: the git version of FUN repositories and
   FUN's edx-platform to checkout. May be a git sha1, tag or remote branch name.
   Defaults to the latest versions, e.g: 2.11.
-- FUN_MICROSITES: define this variable to provision your VM with microsite configuration.
 
 
 Troubleshooting
