@@ -75,6 +75,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", VM_MEMORY]
     vb.customize ["modifyvm", :id, "--cpus", VM_CPU_COUNT]
+    vb.name = "vagrant-openfun-devstack#{fun_release}"
+
 
     # Allow DNS to work for Ubuntu 12.10 host
     # http://askubuntu.com/questions/238040/how-do-i-fix-name-service-for-vagrant-client
