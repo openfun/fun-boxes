@@ -152,12 +152,12 @@ Cannot connect to guest host via ssh
 ------------------------------------
 
 The first step to diagnose this problem is to check the SSH configuration of
-Vagrant for this particular VM:
+Vagrant for this particular VM::
 
     vagrant ssh-config
 
 You can then try to login in verbose mode to the virtual machine by specifying
-explicitely the user, host, port and private key:
+explicitely the user, host, port and private key::
 
     ssh -i /path/to/identity/file -P port -vvv user@host
 
@@ -169,7 +169,7 @@ recent version of setuptools, while Open edX requires an older version of
 distribute. See [this pull
 request](https://github.com/edx/edx-platform/pull/7465/) for reference. In
 practice, this means you might have to manually install the 'right' (i.e: old)
-version of distribute and setuptools manually in your guest environment:
+version of distribute and setuptools manually in your guest environment::
 
     pip install setuptools==0.6c11
     pip install distribute==0.6.49
