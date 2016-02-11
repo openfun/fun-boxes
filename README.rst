@@ -267,3 +267,8 @@ Other issues
 ------------
 
 If other issues arise, feel free to open a ticket on this Github project.
+
+License
+=======
+
+This project is licensed under the AGPL v3.
