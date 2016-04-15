@@ -263,6 +263,29 @@ DNS resolution. Try to alter the `/etc/hosts` file from the guest machine by
 following the instructions from
 http://stackoverflow.com/questions/28562968/django-1-4-18-dev-server-slow-to-respond-under-virtualbox/30356662#30356662
 
+Vagrant up asks for root password when using NFS
+------------------------------------------------
+
+Vagrant needs to access to `/etc/exports` in order to configure NFS sharing each time the VM boot. Thus it needs to be root... 
+More infos: https://www.vagrantup.com/docs/synced-folders/nfs.html
+CHanging your sudoers file you can say that this privilege escalation (for this /etc/exports file vagrant user) is passwordless.
+
+You can a add this at the end of your sudoers file (Ubuntu host, check your host type in the doc before) : 
+
+.. code-block:: bash
+
+    > sudo visudo 
+    Cmnd_Alias VAGRANT_EXPORTS_ADD = /usr/bin/tee -a /etc/exports
+    Cmnd_Alias VAGRANT_EXPORTS_COPY = /bin/cp /tmp/exports /etc/exports
+    Cmnd_Alias VAGRANT_NFSD_CHECK = /etc/init.d/nfs-kernel-server status
+    Cmnd_Alias VAGRANT_NFSD_START = /etc/init.d/nfs-kernel-server start
+    Cmnd_Alias VAGRANT_NFSD_APPLY = /usr/sbin/exportfs -ar
+    Cmnd_Alias VAGRANT_EXPORTS_REMOVE = /bin/sed -r -e * d -ibak /tmp/exports
+    %sudo ALL=(root) NOPASSWD: VAGRANT_EXPORTS_ADD, VAGRANT_NFSD_CHECK, VAGRANT_NFSD_START, VAGRANT_NFSD_APPLY, VAGRANT_EXPORTS_REMOVE, VAGRANT_EXPORTS_COPY
+
+
+
+
 Other issues
 ------------
 
