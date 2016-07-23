@@ -87,6 +87,11 @@ the MV.
 Upgrading an existing VM
 ------------------------
 
+Packaged VMs should not include mounted folders. So before you package a VM,
+make sure to unset the VAGRANT_MOUNT_BASE environment variable::
+
+    unset VAGRANT_MOUNT_BASE
+
 Starting from an existing VM, e.g: release 2.9, you may wish to upgrade it to
 2.10, say for packaging. The following will run the `upgrade.yml` playbook::
 
