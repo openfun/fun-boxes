@@ -17,7 +17,7 @@ A couple basic development packages are required::
 You are going to need vagrant(>= 1.5.3), ansible, and virtualbox to install and
 run the OpenFUN virtual image::
 
-    sudo apt-get install vagrant ansible virtualbox 
+    sudo apt-get install vagrant ansible virtualbox
 
 Note that recent versions of Vagrant can be downloaded from
 http://www.vagrantup.com/downloads.
@@ -40,9 +40,8 @@ OpenFUN provides ready-made VirtualBox images::
     cd releases/
     vagrant up
 
-You may specify the release to use instead::
 
-    FUN_RELEASE=2.9 vagrant up
+This will instanciate the latest FUN release: 4.0.2 running edX dogwood, but you may choose the release if the related git tag exists on this repository (ex: 3.18 running Cypress)::
 
 Downloading the 4.3+Gb Virtualbox image via HTTP may be time consuming.
 Instead, we suggest to download the image by bittorrent from
@@ -271,15 +270,15 @@ http://stackoverflow.com/questions/28562968/django-1-4-18-dev-server-slow-to-res
 Vagrant up asks for root password when using NFS
 ------------------------------------------------
 
-Vagrant needs to access to `/etc/exports` in order to configure NFS sharing each time the VM boot. Thus it needs to be root... 
+Vagrant needs to access to `/etc/exports` in order to configure NFS sharing each time the VM boot. Thus it needs to be root...
 More infos: https://www.vagrantup.com/docs/synced-folders/nfs.html
 CHanging your sudoers file you can say that this privilege escalation (for this /etc/exports file vagrant user) is passwordless.
 
-You can a add this at the end of your sudoers file (Ubuntu host, check your host type in the doc before) : 
+You can a add this at the end of your sudoers file (Ubuntu host, check your host type in the doc before) :
 
 .. code-block:: bash
 
-    > sudo visudo 
+    > sudo visudo
     Cmnd_Alias VAGRANT_EXPORTS_ADD = /usr/bin/tee -a /etc/exports
     Cmnd_Alias VAGRANT_EXPORTS_COPY = /bin/cp /tmp/exports /etc/exports
     Cmnd_Alias VAGRANT_NFSD_CHECK = /etc/init.d/nfs-kernel-server status

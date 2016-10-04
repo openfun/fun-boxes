@@ -5,12 +5,12 @@ end
 
 VAGRANTFILE_API_VERSION = "2"
 
-VM_MEMORY = (ENV["VM_MEMORY"] or "1024")
+VM_MEMORY = (ENV["VM_MEMORY"] or "2048")
 VM_CPU_COUNT = (ENV["VM_CPU_COUNT"] or "2")
 
-latest_fun_release = "3.18"
-latest_openedx_fun_release = "3.18"
-fun_release = "fun-#{ENV["FUN_RELEASE"] or latest_fun_release}"
+latest_fun_release = "4.0.2"
+latest_openedx_fun_release = "4.0.2"
+fun_release = "#{ENV["FUN_RELEASE"] or latest_fun_release}"
 openedx_fun_release = "fun-#{ENV["OPENEDX_FUN_RELEASE"] or latest_openedx_fun_release}"
 if ENV["VAGRANT_BOXES"]
     box_url = "file://#{ENV["VAGRANT_BOXES"]}/openfun-#{fun_release}.box"
@@ -77,7 +77,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "upgrade.yml"
     ansible.extra_vars = {
-      fun_release: fun_release,
+      fun_release: "fun-#{fun_release}",
       openedx_fun_release: openedx_fun_release,
       checkout_repos: (ENV["VAGRANT_MOUNT_BASE"] == nil),
     }
