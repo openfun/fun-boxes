@@ -12,72 +12,50 @@
     edx_ansible_venv: "{{ edxapp_root }}/edx_ansible/venvs/edx_ansible"
     python: "{{ virtualenv }}/bin/python"
     mount_base: "{{ lookup('env', 'VAGRANT_MOUNT_BASE') }}"
+    edx_platform_github: "https://github.com/openfun/edx-platform"
+    edx_platform_remote_name: "fun"
+    fun_github: "https://github.com/openfun/fun-apps"
 
   tasks:
     - name: Update apt cache
       apt: update_cache=yes cache_valid_time=3600
-    - name: Uninstall google-chrome
-      apt: name=google-chrome-stable state=absent
-    - name: Uninstall firefox
-      apt: name=firefox state=absent
-    - name: Uninstall mysql 5.6
-      apt: name=mysql-server-5.6 state=absent purge=yes
-    - name: Install mysql-client-5.5
-      apt: name=mysql-client-5.5 state=present
-    - name: Make sure no flag file prevents mysql-5.5 install
-      file: path=/var/lib/mysql/debian-5.6.flag state=absent
+    - name: Install mysql 5.6
+      apt: name=mysql-server state=present
     - name: Install external version of meliae (not installable via pypi)
       apt: name=python-meliae state=present
 
     - debug: var=mount_base
-    - name: Create fun-apps folder
-      file: state=directory path={{ edxapp_home }}/fun-apps/ owner=edxapp group=edxapp
-      when: mount_base == ""
-    - name: Create edx-platform folder
-      file: state=directory path={{ edxapp_home }}/edx-platform/ owner=edxapp group=edxapp
-      when: mount_base == ""
-    - name: Create cs_comments_service folder
-      file: state=directory path={{ edxapp_root }}/forum/cs_comments_service/ owner=forum group=forum
 
     - name: Checkout fun-apps code
-      git: repo=https://github.com/openfun/fun-apps dest={{ edxapp_home }}/fun-apps/ version={{ fun_release }}
+      git: repo={{ fun_github }} dest={{ edxapp_home }}/fun-apps/ version={{ fun_release }}
       sudo_user: edxapp
-      when: mount_base == ""
-    - name: Checkout edx-platform code
-      git: repo=https://github.com/openfun/edx-platform dest={{ edxapp_home }}/edx-platform/ version={{ openedx_fun_release }}
+
+    - name: Checks whether we have a remote named fun already
+      command: /bin/grep -q "{{ edx_platform_remote_name }}" {{ edxapp_home }}/edx-platform/.git/config
+      register: checkgitremote
       sudo_user: edxapp
-      when: mount_base == ""
+      always_run: True
+      ignore_errors: True
+      changed_when: False
+
+    - debug: var=checkgitremote
+
+    - name: Add fun origin as remote
+      command: /usr/bin/git remote add {{ edx_platform_remote_name }} {{ edx_platform_github }} chdir={{ edxapp_home }}/edx-platform
+      when: checkgitremote == 1
+      sudo_user: edxapp
+
+    - name: Checkout edx-platform code at the right version {{ openedx_fun_release }}
+      git: repo={{ edx_platform_github }} dest={{ edxapp_home }}/edx-platform/ version={{ openedx_fun_release }}
+           remote={{ edx_platform_remote_name }}
+      when: checkgitremote == 1
+      sudo_user: edxapp
 
     - name: Fix venv permissions
       file:
         path={{ edx_ansible_venv }}
         state=directory
         recurse=yes owner=edx-ansible group=edx-ansible
-    - name: Install pip (version found in edx/requirements/pre.txt)
-      pip: virtualenv={{ virtualenv }} name=pip version=6.0.8
-      sudo_user: edxapp
-    - name: Install setuptools
-      pip: virtualenv={{ virtualenv }} name=setuptools version=0.6c9
-      sudo_user: edxapp
-    - name: Install distribute (older version than necessary)
-      pip: virtualenv={{ virtualenv }} name=distribute version=0.6.49
-      sudo_user: edxapp
-
-    - debug: msg="Running Edx ansible scripts for release {{ openedx_release }} (FUN release {{ openedx_fun_release }})"
-      tags:
-          - edx-devstack
-    - name: Run vagrant-devstack.yml playbook from Edx
-      shell: . /edx/app/edx_ansible/venvs/edx_ansible/bin/activate &&
-          ansible-playbook -i localhost, -c local vagrant-devstack.yml
-          -e configuration_version={{ openedx_release }}
-          -e edx_platform_version={{ openedx_fun_release }}
-          -e certs_version={{ openedx_release }}
-          -e forum_version={{ openedx_release }}
-          -e xqueue_version={{ openedx_release }}
-        chdir="/edx/app/edx_ansible/edx_ansible/playbooks"
-      tags:
-          - edx
-
     - name: Create test report folder
       file: state=directory path={{ edxapp_home }}/edx-platform/reports/
       sudo_user: edxapp
@@ -99,40 +77,42 @@
     - name: Create attestations folder
       file: state=directory path=/edx/var/edxapp/attestations/
       sudo_user: edxapp
+    - name: Create ora2 folder
+      file: state=directory path=/edx/var/edxapp/shared/openassessment_submissions
+      sudo_user: edxapp
 
-    - name: Install setuptools
-      pip: virtualenv={{ virtualenv }} name=setuptools state=latest
+    - name: Symlink lms.envs and cms.envs
+      file: src={{ edxapp_home }}/fun-apps/fun/envs/lms/dev.py dest={{ edxapp_home }}/edx-platform/lms/envs/fundev.py state=link
       sudo_user: edxapp
-    - name: Upgrade setuptools (yes, AGAIN)
-      pip: virtualenv={{ virtualenv }} name=setuptools state=latest
+      file: src={{ edxapp_home }}/fun-apps/fun/envs/cms/dev.py dest={{ edxapp_home }}/edx-platform/cms/envs/fundev.py state=link
       sudo_user: edxapp
+
     - name: Install fun-apps base requirements
       pip: virtualenv={{ virtualenv }} requirements="{{ edxapp_home }}/fun-apps/requirements/base.txt"
-      sudo_user: edxapp
-    - name: Install fun-apps dm-xblock requirements
-      pip: virtualenv={{ virtualenv }} requirements="{{ edxapp_home }}/fun-apps/requirements/dm-xblock.txt"
       sudo_user: edxapp
     - name: Install fun-apps dev requirements
       pip: virtualenv={{ virtualenv }} requirements="{{ edxapp_home }}/fun-apps/requirements/dev.txt"
       sudo_user: edxapp
 
     - name: Syncdb for lms
-      shell: "{{ virtualenv }}/bin/fun lms.dev syncdb"
+      command: "{{ edxapp_home }}/edx-platform/manage.py lms --settings=fundev syncdb"
       args:
           chdir: "{{ edxapp_home }}/edx-platform"
       sudo_user: edxapp
+
     - name: Syncdb for cms
-      shell: "{{ virtualenv }}/bin/fun cms.dev syncdb"
+      shell: "{{ edxapp_home }}/edx-platform/manage.py cms --settings=fundev syncdb"
       args:
           chdir: "{{ edxapp_home }}/edx-platform"
       sudo_user: edxapp
+
     - name: Migrate lms
-      shell: "{{ virtualenv }}/bin/fun lms.dev migrate"
+      shell: "{{ edxapp_home }}/edx-platform/manage.py lms --settings=fundev migrate"
       args:
           chdir: "{{ edxapp_home }}/edx-platform"
       sudo_user: edxapp
     - name: Migrate cms
-      shell: "{{ virtualenv }}/bin/fun cms.dev migrate"
+      shell: "{{ edxapp_home }}/edx-platform/manage.py cms --settings=fundev migrate"
       args:
           chdir: "{{ edxapp_home }}/edx-platform"
       sudo_user: edxapp
