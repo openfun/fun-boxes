@@ -33,22 +33,20 @@
     - name: Checks whether we have a remote named fun already
       command: /bin/grep -q "{{ edx_platform_remote_name }}" {{ edxapp_home }}/edx-platform/.git/config
       register: checkgitremote
-      sudo_user: edxapp
       always_run: True
       ignore_errors: True
       changed_when: False
 
-    - debug: var=checkgitremote
+    - debug: var=checkgitremote.rc
 
     - name: Add fun origin as remote
       command: /usr/bin/git remote add {{ edx_platform_remote_name }} {{ edx_platform_github }} chdir={{ edxapp_home }}/edx-platform
-      when: checkgitremote == 1
+      when: checkgitremote.rc == 1
       sudo_user: edxapp
 
     - name: Checkout edx-platform code at the right version {{ openedx_fun_release }}
       git: repo={{ edx_platform_github }} dest={{ edxapp_home }}/edx-platform/ version={{ openedx_fun_release }}
            remote={{ edx_platform_remote_name }}
-      when: checkgitremote == 1
       sudo_user: edxapp
 
     - name: Fix venv permissions
@@ -81,10 +79,11 @@
       file: state=directory path=/edx/var/edxapp/shared/openassessment_submissions
       sudo_user: edxapp
 
-    - name: Symlink lms.envs and cms.envs
-      file: src={{ edxapp_home }}/fun-apps/fun/envs/lms/dev.py dest={{ edxapp_home }}/edx-platform/lms/envs/fundev.py state=link
+    - name: Symlink lms.envs
+      file: src={{ edxapp_home }}/fun-apps/fun/envs/lms/fundev.py dest={{ edxapp_home }}/edx-platform/lms/envs/fundev.py state=link
       sudo_user: edxapp
-      file: src={{ edxapp_home }}/fun-apps/fun/envs/cms/dev.py dest={{ edxapp_home }}/edx-platform/cms/envs/fundev.py state=link
+    - name: Symlink cms.envs
+      file: src={{ edxapp_home }}/fun-apps/fun/envs/cms/fundev.py dest={{ edxapp_home }}/edx-platform/cms/envs/fundev.py state=link
       sudo_user: edxapp
 
     - name: Install fun-apps base requirements
@@ -95,24 +94,23 @@
       sudo_user: edxapp
 
     - name: Syncdb for lms
-      command: "{{ edxapp_home }}/edx-platform/manage.py lms --settings=fundev syncdb"
+      command:  "{{ virtualenv }}/bin/python {{ edxapp_home }}/edx-platform/manage.py lms syncdb --settings=fundev"
+      args:
+          chdir: "{{ edxapp_home }}/edx-platform"
+      sudo_user: edxapp
+    - name: Migrate for lms
+      command:  "{{ virtualenv }}/bin/python {{ edxapp_home }}/edx-platform/manage.py lms migrate --settings=fundev"
       args:
           chdir: "{{ edxapp_home }}/edx-platform"
       sudo_user: edxapp
 
     - name: Syncdb for cms
-      shell: "{{ edxapp_home }}/edx-platform/manage.py cms --settings=fundev syncdb"
+      command:  "{{ virtualenv }}/bin/python {{ edxapp_home }}/edx-platform/manage.py cms syncdb --settings=fundev"
       args:
           chdir: "{{ edxapp_home }}/edx-platform"
       sudo_user: edxapp
-
-    - name: Migrate lms
-      shell: "{{ edxapp_home }}/edx-platform/manage.py lms --settings=fundev migrate"
-      args:
-          chdir: "{{ edxapp_home }}/edx-platform"
-      sudo_user: edxapp
-    - name: Migrate cms
-      shell: "{{ edxapp_home }}/edx-platform/manage.py cms --settings=fundev migrate"
+    - name: Migrate for cms
+      command:  "{{ virtualenv }}/bin/python {{ edxapp_home }}/edx-platform/manage.py cms migrate --settings=fundev"
       args:
           chdir: "{{ edxapp_home }}/edx-platform"
       sudo_user: edxapp
