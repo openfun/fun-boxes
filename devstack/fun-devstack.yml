@@ -114,3 +114,8 @@
       args:
           chdir: "{{ edxapp_home }}/edx-platform"
       sudo_user: edxapp
+    - name: Set Staff as super user
+      command:  "{{ virtualenv }}/bin/python {{ edxapp_home }}/edx-platform/manage.py lms --settings=fundev set_superuser staff@example.com"
+      args:
+          chdir: "{{ edxapp_home }}/edx-platform"
+      sudo_user: edxapp
