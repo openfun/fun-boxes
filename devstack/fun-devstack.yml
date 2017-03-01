@@ -27,7 +27,7 @@
     - debug: var=mount_base
 
     - name: Checkout fun-apps code
-      git: repo={{ fun_github }} dest={{ edxapp_home }}/fun-apps/ version={{ fun_release }}
+      git: repo={{ fun_github }} dest={{ edxapp_home }}/fun-apps/ version={{ fun_app_release }}
       sudo_user: edxapp
 
     - name: Checks whether we have a remote named fun already

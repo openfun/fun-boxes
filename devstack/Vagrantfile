@@ -79,7 +79,9 @@ fun_releases = {
 
 latest_fun_release = "fun-4.5.10"
 fun_release = (ENV["FUN_RELEASE"] or latest_fun_release)
+fun_app_release = (ENV["FUN_APP_RELEASE"] or fun_release)
 openedx_release = fun_releases[fun_release][:openedx_release]
+openedx_fun_release = (ENV["OPENEDX_FUN_RELEASE"] or fun_release)
 
 if openedx_release.include? "dogwood"
 	ENV["DEMO_VERSION"]="master"
@@ -195,7 +197,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
      ansible.playbook = "fun-devstack.yml"
      ansible.extra_vars = {
       fun_release: fun_release,
-      openedx_fun_release: fun_release,
+      fun_app_release: fun_app_release,
+      openedx_fun_release: openedx_fun_release
       }
   end
 end
