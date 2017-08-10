@@ -3,8 +3,8 @@
 - name: Upgrade FUN development stack
   hosts: all
   remote_user: vagrant
-  sudo: yes
-  sudo_user: edxapp
+  become: yes
+  become_user: edxapp
   vars:
     fun_release: "dev"
     openedx_fun_release: "dev"
