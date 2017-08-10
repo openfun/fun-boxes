@@ -49,25 +49,25 @@
       args:
         executable: /bin/bash
         chdir: "{{ edxapp_home}}/edx-platform"
-      environment: env
+      environment: "{{ env }}"
     - name: Generate lms assets
       shell: "{{ virtualenv }}/bin/fun lms.dev assets"
       args:
         chdir: "{{ edxapp_home}}/edx-platform"
-      environment: env
+      environment: "{{ env }}"
     - name: Generate cms assets
       shell: "{{ virtualenv }}/bin/fun cms.dev assets"
       args:
         chdir: "{{ edxapp_home}}/edx-platform"
-      environment: env
+      environment: "{{ env }}"
 
     - name: Migrate lms
       shell: "{{ virtualenv }}/bin/fun lms.dev migrate"
       args:
           chdir: "{{ edxapp_home }}/edx-platform"
-      environment: env
+      environment: "{{ env }}"
     - name: Migrate cms
       shell: "{{ virtualenv }}/bin/fun cms.dev migrate"
       args:
           chdir: "{{ edxapp_home }}/edx-platform"
-      environment: env
+      environment: "{{ env }}"
